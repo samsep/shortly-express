@@ -2,6 +2,8 @@ var express = require('express');
 var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
+var session = require('express-session');
+var cp = require('cookie-parser');
 
 var db = require('./app/config');
 var Users = require('./app/collections/users');
@@ -22,10 +24,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
+app.use(cp());
 
 app.get('/',
 function(req, res) {
-  if (logs)
+  console.log(req.cookies);
   res.render('index');
 });
 
@@ -38,7 +41,7 @@ app.post('/login',
   function(req, res) {
     var username = req.body.username;
     var password = req.body.password;
-    new User().doLogin(username, password, req, res);
+    new User().doLogin(username, password, req, res, app);
   });
 
 app.get('/signup',
