@@ -3,10 +3,10 @@ var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
 
-
 var db = require('./app/config');
 var Users = require('./app/collections/users');
-var User = require('./app/models/user');
+var User = require('./app/models/user').user;
+var logs = require('./app/models/user').logs;
 var Links = require('./app/collections/links');
 var Link = require('./app/models/link');
 var Click = require('./app/models/click');
@@ -23,24 +23,50 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
 
-app.get('/', 
+app.get('/',
+function(req, res) {
+  if (logs)
+  res.render('index');
+});
+
+app.get('/login',
+  function(req, res) {
+    res.render('login');
+  });
+
+app.post('/login',
+  function(req, res) {
+    var username = req.body.username;
+    var password = req.body.password;
+    new User().doLogin(username, password, req, res);
+  });
+
+app.get('/signup',
+  function(req, res) {
+    res.render('signup');
+  });
+
+app.post('/signup',
+function(req, res) {
+  var username = req.body.username;
+  var password = req.body.password;
+  new User().doSignup(username, password, req, res);
+
+});
+
+app.get('/create',
 function(req, res) {
   res.render('index');
 });
 
-app.get('/create', 
-function(req, res) {
-  res.render('index');
-});
-
-app.get('/links', 
+app.get('/links',
 function(req, res) {
   Links.reset().fetch().then(function(links) {
     res.send(200, links.models);
   });
 });
 
-app.post('/links', 
+app.post('/links',
 function(req, res) {
   var uri = req.body.url;
 
@@ -108,5 +134,5 @@ app.get('/*', function(req, res) {
   });
 });
 
-console.log('Shortly is listening on 4568');
-app.listen(4568);
+console.log('Shortly is listening on 8080');
+app.listen(8080);
