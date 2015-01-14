@@ -7,8 +7,7 @@ var cp = require('cookie-parser');
 
 var db = require('./app/config');
 var Users = require('./app/collections/users');
-var User = require('./app/models/user').user;
-var logs = require('./app/models/user').logs;
+var User = require('./app/models/user');
 var Links = require('./app/collections/links');
 var Link = require('./app/models/link');
 var Click = require('./app/models/click');
@@ -24,14 +23,21 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
-app.use(cp());
+app.use(session({
+    secret: "1",
+    cookie: { maxAge: 2628000000, username: ""},
+    username: "",
+    resave: false,
+    saveUninitialized: false
+}));
+
 
 app.get('/',
 function(req, res) {
-  console.log(req.cookies);
-  res.render('index');
-});
+  if (req.session.user) {console.log(req.session); res.render('index');}
+  else {res.redirect('/login')}
 
+});
 app.get('/login',
   function(req, res) {
     res.render('login');
@@ -59,14 +65,20 @@ function(req, res) {
 
 app.get('/create',
 function(req, res) {
-  res.render('index');
+  if (req.session.user) {console.log(req.session); res.render('index');}
+  else {res.redirect('/login')}
 });
 
 app.get('/links',
 function(req, res) {
-  Links.reset().fetch().then(function(links) {
-    res.send(200, links.models);
-  });
+  console.log(req.session.user, "USERERERERERERERER");
+  if (req.session.user||false) {
+    Links.reset().fetch().then(function(links) {
+      res.set('Content-Type', 'text/html');
+      res.send(200, links.models);
+    });
+  }
+  else {res.redirect('/login')}
 });
 
 app.post('/links',

@@ -65,16 +65,16 @@ describe('', function() {
 
     beforeEach(function(done){      // create a user that we can then log-in with
       new User({
-          'username': 'Phillip',
-          'password': 'Phillip'
+          'username': 'Px_F',
+          'password': 'Px_F'
       }).save().then(function(){
         var options = {
           'method': 'POST',
           'followAllRedirects': true,
           'uri': 'http://127.0.0.1:8080/login',
           'json': {
-            'username': 'Phillip',
-            'password': 'Phillip'
+            'username': 'Px_F',
+            'password': 'Px_F'
           }
         };
         // login via form and save session info
@@ -239,26 +239,26 @@ describe('', function() {
 
   }); // 'Priviledged Access'
 
-  xdescribe('Account Creation:', function(){
+  describe('Account Creation:', function(){
 
     it('Signup creates a user record', function(done) {
       var options = {
         'method': 'POST',
         'uri': 'http://127.0.0.1:8080/signup',
         'json': {
-          'username': 'Svnh',
-          'password': 'Svnh'
+          'username': 'Svn',
+          'password': 'Svn'
         }
       };
 
       request(options, function(error, res, body) {
         db.knex('users')
-          .where('username', '=', 'Svnh')
+          .where('username', '=', 'Svn')
           .then(function(res) {
             if (res[0] && res[0]['username']) {
               var user = res[0]['username'];
             }
-            expect(user).to.equal('Svnh');
+            expect(user).to.equal('Svn');
             done();
           }).catch(function(err) {
             throw {
@@ -274,8 +274,8 @@ describe('', function() {
         'method': 'POST',
         'uri': 'http://127.0.0.1:8080/signup',
         'json': {
-          'username': 'Phillip',
-          'password': 'Phillip'
+          'username': 'Philli',
+          'password': 'Philli'
         }
       };
 
@@ -287,7 +287,7 @@ describe('', function() {
 
   }); // 'Account Creation'
 
-  xdescribe('Account Login:', function(){
+  describe('Account Login:', function(){
 
     var requestWithSession = request.defaults({jar: true});
 

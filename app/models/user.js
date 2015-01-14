@@ -10,19 +10,19 @@ var User = db.Model.extend({
   hasTimestamps: true,
   created_at: new Date(),
   updated_at: new Date(),
+
   doLogin: function(user, pass, req, res, app) {
-    console.log("Hello Samin");
-    app.use(session({
-        secret: 'user',
-        cookie: { maxAge: 2628000000 },
-    }));
-    console.log(req.cookies);
-    allLogged[req.cookies['connect.sid']] = user;
-    console.log(allLogged);
+
+    // console.log(req.cookies);
+    // allLogged[req.cookies['connect.sid']] = user;
+    // console.log(allLogged);
     new User({ username: user}).fetch().then(function(found) {
       if (found) {
         bcrypt.compare(pass+user, found.get("password"),function(err, flag) {
-          if (flag) {allLogged[user] = true;res.json({success: "YAYAYAYAYAYAYAYAY"})}
+          if (flag) {
+            req.session.user = user;
+            res.redirect('/');
+          }
           else{res.redirect(301, '/')}
         })
       }
@@ -40,7 +40,9 @@ var User = db.Model.extend({
               username: user,
               password: hash
             }).save().then(function(newUser)  {
-                res.send(200, newUser);
+                console.log(newUser, "new user yo");
+                req.session.user = newUser;
+                res.redirect('/');
             });
           });
       }
@@ -48,5 +50,5 @@ var User = db.Model.extend({
   }
 });
 
-module.exports.user = User;
+module.exports = User;
 module.exports.logs = allLogged;
